@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -250,6 +251,7 @@ var (
 	buildTVOSVersion  string      // -tvosversion
 	buildAndroidAPI   int         // -androidapi
 	buildTags         stringsFlag // -tags
+	buildTagsMacOS    stringsFlag // -tags-macos
 	buildVCS          bool        // -buildvcs
 )
 
@@ -268,6 +270,7 @@ func addBuildFlags(cmd *command) {
 	cmd.flag.BoolVar(&buildI, "i", false, "")
 	cmd.flag.BoolVar(&buildTrimpath, "trimpath", false, "")
 	cmd.flag.Var(&buildTags, "tags", "")
+	cmd.flag.Var(&buildTagsMacOS, "tags-macos", "")
 	cmd.flag.BoolVar(&buildVCS, "buildvcs", true, "")
 }
 
@@ -312,6 +315,9 @@ func goCmd(subcmd string, srcs []string, env []string, args ...string) error {
 func goCmdAt(at string, subcmd string, srcs []string, env []string, args ...string) error {
 	cmd := exec.Command("go", subcmd)
 	tags := buildTags
+	if slices.Contains(env, "GOOS=darwin") {
+		tags = append(tags, buildTagsMacOS...)
+	}
 	if len(tags) > 0 {
 		cmd.Args = append(cmd.Args, "-tags", strings.Join(tags, ","))
 	}

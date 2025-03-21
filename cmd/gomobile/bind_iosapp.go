@@ -66,6 +66,9 @@ func goAppleBind(gobind string, pkgs []*packages.Package, targets []targetInfo) 
 			cmd.Env = append(cmd.Env, "GOOS="+platformOS(platform))
 			cmd.Env = append(cmd.Env, "CGO_ENABLED=1")
 			tags := append(buildTags[:], platformTags(platform)...)
+			if platform == "macos" {
+				tags = append(tags, buildTagsMacOS...)
+			}
 			cmd.Args = append(cmd.Args, "-tags="+strings.Join(tags, ","))
 			if bindPrefix != "" {
 				cmd.Args = append(cmd.Args, "-prefix="+bindPrefix)

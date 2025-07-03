@@ -252,6 +252,7 @@ var (
 	buildAndroidAPI   int         // -androidapi
 	buildTags         stringsFlag // -tags
 	buildTagsMacOS    stringsFlag // -tags-macos
+	buildTagsNotMacos stringsFlag // -tags-not-macos
 	buildVCS          bool        // -buildvcs
 )
 
@@ -271,6 +272,7 @@ func addBuildFlags(cmd *command) {
 	cmd.flag.BoolVar(&buildTrimpath, "trimpath", false, "")
 	cmd.flag.Var(&buildTags, "tags", "")
 	cmd.flag.Var(&buildTagsMacOS, "tags-macos", "")
+	cmd.flag.Var(&buildTagsNotMacos, "tags-not-macos", "")
 	cmd.flag.BoolVar(&buildVCS, "buildvcs", true, "")
 }
 
@@ -317,6 +319,8 @@ func goCmdAt(at string, subcmd string, srcs []string, env []string, args ...stri
 	tags := buildTags
 	if slices.Contains(env, "GOOS=darwin") {
 		tags = append(tags, buildTagsMacOS...)
+	} else {
+		tags = append(tags, buildTagsNotMacos...)
 	}
 	if len(tags) > 0 {
 		cmd.Args = append(cmd.Args, "-tags", strings.Join(tags, ","))

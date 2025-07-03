@@ -68,6 +68,8 @@ func goAppleBind(gobind string, pkgs []*packages.Package, targets []targetInfo) 
 			tags := append(buildTags[:], platformTags(platform)...)
 			if platform == "macos" {
 				tags = append(tags, buildTagsMacOS...)
+			} else {
+				tags = append(tags, buildTagsNotMacos...)
 			}
 			cmd.Args = append(cmd.Args, "-tags="+strings.Join(tags, ","))
 			if bindPrefix != "" {
